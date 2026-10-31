@@ -1,61 +1,99 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Us Form</title>
-    <link rel="stylesheet "href="contact.css">
+    <link rel="stylesheet" href="contact.css">
 </head>
 <body>
+
     <div class="container">
         <form autocomplete="off" method="POST" name="google-sheet" id="form">
+
             <h3>Contact Us</h3>
-            <div id="res" style="color: green;"></div>
-            <input type="text" placeholder="Type your name here"name="name">
-            <input type="text" placeholder="Type your Email here"name="email">
-            <input type="text" placeholder="Type your Number here"name="mobile">
-            <select name="degree">
-                <option value="Not Selected">Select an option</option>
+
+            <div id="res"></div>
+
+            <input type="text" placeholder="Type your name here" name="name" required>
+
+            <input type="email" placeholder="Type your Email here" name="email" required>
+
+            <input type="tel" placeholder="Type your Mobile Number here" name="mobile" required>
+
+            <select name="degree" required>
+                <option value="">Select an option</option>
                 <option value="B.Sc">B.Sc</option>
                 <option value="B.A">B.A</option>
                 <option value="B.Com">B.Com</option>
                 <option value="M.A">M.A</option>
-            </select> 
-            <textarea rows="4" placeholder="how we cam help?" name="message"></textarea>
-            <lable><b>Gender</b><br><br>
-            Male <br> <input type="radio" name="gender" value="Male"><br>
-            Female <br><input type ="radio" name="gender" value="Female">
-           </lable>
-            <button type="submit" name="submit">Send</button>
-            <button type="reset" class ="reset">Reset</button>
+            </select>
+
+            <textarea rows="4" placeholder="How can we help?" name="message"></textarea>
+
+            <!-- Gender Section -->
+            <div class="gender-row">
+                <b>Gender:</b>
+
+                <label>
+                    <input type="radio" name="gender" value="Male" required>
+                    Male
+                </label>
+
+                <label>
+                    <input type="radio" name="gender" value="Female">
+                    Female
+                </label>
+            </div>
+
+            <!-- Buttons Section -->
+            <div class="button-row">
+                <button type="submit" name="submit">Send</button>
+                <button type="reset" class="reset">Reset</button>
+            </div>
+
         </form>
     </div>
-    <script>
-        let scriptURL = 'https://script.google.com/macros/s/AKfycbw0Qq4lh15Yu6GnNAbjeA_0CSJNCJi_aEQ_00L_TbgqqyGdX69zFXiL3ejh5_jYVW9x/exec'
-        let form = document.querySelector('#form')
-      
-        form.addEventListener('submit', (e) => {
-         e.target.submit.innerHTML="Sending...";
-         let d = new FormData(form);
-          fetch(scriptURL,{
-             method: 'POST',
-             body: d
-           })
-            // .then(response => alert("Sucessful Send "))
-            // .catch(error => console.error('Error!', error.message))
-            .then((res)=>res.text())
-            .then((finalRes)=>{
-                e.target.submit.innerHTML="Send";
-                document.getElementById("res").innerHTML=finalRes;
-                form.reset();
-                setTimeout(()=>{
-                    document.getElementById("res").innerHTML='';
-                },5000)
-                console.log(finalRes)
 
-            })
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbw0Qq4lh15Yu6GnNAbjeA_0CSJNCJi_aEQ_00L_TbgqqyGdX69zFXiL3ejh5_jYVW9x/exec';
+
+        const form = document.querySelector('#form');
+        const response = document.getElementById('res');
+        const submitBtn = form.querySelector('[type="submit"]');
+
+        form.addEventListener('submit', (e) => {
             e.preventDefault();
-        })
+
+            submitBtn.innerHTML = "Sending...";
+            submitBtn.disabled = true;
+
+            const data = new FormData(form);
+
+            fetch(scriptURL, {
+                method: 'POST',
+                body: data
+            })
+            .then(res => res.text())
+            .then(result => {
+                response.innerHTML = result;
+                form.reset();
+
+                setTimeout(() => {
+                    response.innerHTML = '';
+                }, 5000);
+            })
+            .catch(error => {
+                response.innerHTML = "Something went wrong. Please try again.";
+                console.error('Error:', error);
+            })
+            .finally(() => {
+                submitBtn.innerHTML = "Send";
+                submitBtn.disabled = false;
+            });
+        });
     </script>
+
 </body>
 </html>
